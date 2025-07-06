@@ -6,8 +6,9 @@ const bcrypt = require("bcrypt");
 const {JWT_USER_PASSWORD} = require("../config")
 const {UserModel} = require("../db");
 const {authentication,validation} = require("../middlewares/user") ;
-UserRouter.post("/signup",async function(req,res){
+UserRouter.post("/signup",validation,async function(req,res){
  const {email,password,firstName,lastName } = req.body;
+ try{
     const encryptedPass = await bcrypt.hash(password,5);
    const check =  await UserModel.create({
         email,
@@ -19,11 +20,17 @@ UserRouter.post("/signup",async function(req,res){
 res.json({
     mess :"you are signed up"
 })
+ }
+ catch(e){
+    res.status(403).json({
+        mess : "Duplicate User"
+    })
+ }
 })
 
 UserRouter.post("/signin",async function(req,res){
      const {email,password} = req.body;
-     let foundUser = UserModel.findOne({
+     let foundUser = await UserModel.findOne({
         email
      })
      if(foundUser){
@@ -51,7 +58,7 @@ UserRouter.post("/signin",async function(req,res){
      }
 })
 
-UserRouter.post("/courses",function(req,res){
+UserRouter.post("/courses",authentication,function(req,res){
     res.json({
     mess :"you are signed up"
 })

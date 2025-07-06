@@ -6,10 +6,10 @@ const {JWT_USER_PASSWORD} = require("../config");
 
 function validation(req,res,next){
     const validateObject = z.object({
-    email : z.string().z.min(5).z.max(40).z.email(),
-    password : z.string().z.min(5).z.max(40),
-    firstName : z.string().z.min(3).z.max(40),
-    lastName : z.string().z.min(3).z.max(40)
+    email : z.string().min(5).max(40).email(),
+    password : z.string().min(5).max(40),
+    firstName : z.string().min(3).max(40),
+    lastName : z.string().min(3).max(40)
     })
 
     const parsed = validateObject.safeParse(req.body);
@@ -32,9 +32,15 @@ function authentication(req,res,next){
     req.userId = decoded.userId;
     next();
     }
-    catch{e}{
+    catch(e){
         res.status(403).json({
             mess : "Authentication failed"
         })
+        
     }
+}
+
+module.exports = {
+    authentication,
+    validation
 }

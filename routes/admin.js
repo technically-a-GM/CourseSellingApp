@@ -23,7 +23,7 @@ res.json({
 
 AdminRouter.post("/signin",async function(req,res){
     const {email,password} = req.body;
-     let foundUser = AdminModel.findOne({
+     let foundUser = await AdminModel.findOne({
         email
      })
      if(foundUser){
@@ -51,7 +51,7 @@ AdminRouter.post("/signin",async function(req,res){
      }
 })
 
-AdminRouter.post("/courses",function(req,res){
+AdminRouter.post("/courses",authentication,function(req,res){
     res.json({
     mess :"you are signed up"
 })

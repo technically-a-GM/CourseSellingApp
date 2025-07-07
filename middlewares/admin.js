@@ -32,9 +32,9 @@ function authentication(req,res,next){
     req.adminId = decoded.adminId;
     next();
     }
-    catch{e}{
+    catch(e){
         res.status(403).json({
-            mess : "Authentication failed"
+            mess : "Authentication is failed"
         })
     }
 }

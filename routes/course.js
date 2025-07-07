@@ -1,15 +1,26 @@
 const express = require('express');
 const CourseRouter  = express.Router();
+const {PurchaseModel,CourseModel} = require('../db');
+const {authentication} = require('../middlewares/user');
 
-CourseRouter.post("/purchases",function(req,res){
+
+CourseRouter.post("/purchase",authentication,async function (req,res){
+    const userId = req.userId;
+    const courseId = req.body.courseId;
+     await PurchaseModel.create({
+        UserId : userId,
+        CourseId : courseId
+     })
+
 res.json({
-    mess :"you are signed up"
+    mess :"you have bought the course"
 })
 })
 
-CourseRouter.post("/preview",function(req,res){
+CourseRouter.get("/preview",async function(req,res){
+    const courses = await CourseModel.find({});
     res.json({
-    mess :"you are signed up"
+    Courses : courses
 })
 })
 

@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 const {JWT_ADMIN_PASSWORD} = require("../config");
 const AdminRouter = express.Router();
-const {AdminModel} = require("../db");
+const {AdminModel,CourseModel} = require("../db");
 const {authentication,validation} = require("../middlewares/admin") ;
 AdminRouter.post("/signup",validation,async function(req,res){
     const {email,password,firstName,lastName } = req.body;
@@ -51,15 +51,61 @@ AdminRouter.post("/signin",async function(req,res){
      }
 })
 
-AdminRouter.post("/courses",authentication,function(req,res){
+AdminRouter.post("/courses",authentication,async function(req,res){
+    const adminId = req.adminId;
+    const {title,description,price,imageUrl} = req.body
+    const course = await CourseModel.create({
+        title,
+        description,
+        price,
+        imageUrl,
+        CreatorId : adminId
+    })
     res.json({
-    mess :"you are signed up"
+    mess :"Course Created",
+    CourseId : course._id
 })
 })
 
-AdminRouter.post("/courses/bulk",function(req,res){
+AdminRouter.put("/updatecourses",authentication,async function(req,res){
+    const adminId = req.adminId;
+   const {title,description,price,imageUrl,courseId} = req.body
+      const course= await CourseModel.findOne({
+         _id : courseId,
+        CreatorId : adminId 
+      })
+      if(course){
+       const course2 =await CourseModel.updateOne({
+        _id : courseId,
+        CreatorId : adminId    
+       },
+       {
+        title,
+        description,
+        price,
+        imageUrl,
+       })
     res.json({
-    mess :"you are signed up"
+    mess :"Course Updated",
+    CourseId : course._id
+})
+      }
+      else
+      {
+        res.status(403).json({
+            mess : "course does not exists"
+        })
+      }
+})
+
+AdminRouter.get("/courses/bulk",authentication,async function(req,res){
+   const adminId = req.adminId;
+   const courses = await CourseModel.find({
+    CreatorId : adminId
+   })
+    res.json({
+   courses : "below are your courses",
+   courses
 })
 })
 

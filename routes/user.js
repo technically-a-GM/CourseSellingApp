@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const {JWT_USER_PASSWORD} = require("../config")
-const {UserModel} = require("../db");
+const {UserModel,PurchaseModel, CourseModel} = require("../db");
 const {authentication,validation} = require("../middlewares/user") ;
 UserRouter.post("/signup",validation,async function(req,res){
  const {email,password,firstName,lastName } = req.body;
@@ -58,9 +58,20 @@ UserRouter.post("/signin",async function(req,res){
      }
 })
 
-UserRouter.post("/courses",authentication,function(req,res){
+UserRouter.post("/courses",authentication,async function(req,res){
+    const userId = req.userId;
+    const purchases = await PurchaseModel.find({
+        UserId : userId
+    })
+    const courses = []
+    for(const it of purchases){
+        const course = await CourseModel.findOne({
+            _id : it.CourseId
+        })
+        courses.push(course);
+    }
     res.json({
-    mess :"you are signed up"
+    courses : courses
 })
 })
 
